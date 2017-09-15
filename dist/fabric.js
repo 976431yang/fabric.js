@@ -10028,6 +10028,19 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
       this.renderAll();
       return this;
     },
+    cancelActiveObject: function (e) {
+      var currentActiveObject = this.getActiveObject();
+      if (currentActiveObject) {
+        currentActiveObject.fire('deselected', { e: e });
+        currentActiveObject.set('active', false);
+        if ( currentActiveObject.onDeselect && typeof currentActiveObject.onDeselect === 'function') {
+          currentActiveObject.onDeselect();
+        }
+      }
+      this._activeObject = null;
+      this.renderAll();
+      return this;
+    },
 
     /**
      * Returns currently active object
