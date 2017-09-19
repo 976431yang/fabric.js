@@ -14903,6 +14903,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
           ey = pointer.y,
           xPoints,
           lines;
+      var linefakeshow = false;
       this.__corner = 0;
       for (var i in this.oCoords) {
 
@@ -15172,13 +15173,32 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       return this;
     },
 
+    setLineSpecialShow: function(){
+      linefakeshow = true;
+    },
+
     /**
      * @private
      */
     _drawControl: function(control, ctx, methodName, left, top) {
-      if (!this.isControlVisible(control)) {
+      var show = false;
+      if(linefakeshow){
+        if(control === 'ml' || control === 'mr'){
+          show = true;
+        }else{
+          show = false;
+        }
+      }else{
+        if (!this.isControlVisible(control)) {
+          show = false;
+        }else{
+          show = true;
+        } 
+      }
+      if(!show){
         return;
       }
+      
       var size = this.cornerSize, stroke = !this.transparentCorners && this.cornerStrokeColor;
       switch (this.cornerStyle) {
         case 'circle':
