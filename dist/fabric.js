@@ -12545,6 +12545,9 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
      */
     dirty:                true,
 
+    //show two point without touch able
+    linefakeshow:         false,
+
     /**
      * List of properties to consider when checking if state
      * of an object is changed (fabric.Object#hasStateChanged)
@@ -14881,7 +14884,6 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       isVML = function() { return typeof G_vmlCanvasManager !== 'undefined'; };
       /* eslint-enable camelcase */
   fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prototype */ {
-
     /**
      * The object interactivity controls.
      * @private
@@ -14903,7 +14905,6 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
           ey = pointer.y,
           xPoints,
           lines;
-      var linefakeshow = false;
       this.__corner = 0;
       for (var i in this.oCoords) {
 
@@ -15151,14 +15152,27 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
           top + height);
 
         // middle-right
-        this._drawControl('mr', ctx, methodName,
+        if(this.linefakeshow){
+          this._drawControl('mr', ctx, methodName,
+          left + width - this.padding,
+          top + height / 2);
+        }else{
+          this._drawControl('mr', ctx, methodName,
           left + width,
           top + height / 2);
+        }
 
         // middle-left
-        this._drawControl('ml', ctx, methodName,
+        if(this.linefakeshow){
+          this._drawControl('ml', ctx, methodName,
+          left+this.padding,
+          top + height / 2);
+        }else{
+          this._drawControl('ml', ctx, methodName,
           left,
           top + height / 2);
+        }
+        
       }
 
       // middle-top-rotate
@@ -15174,7 +15188,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
     },
 
     setLineSpecialShow: function(){
-      linefakeshow = true;
+      this.linefakeshow = true;
     },
 
     /**
@@ -15182,7 +15196,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
      */
     _drawControl: function(control, ctx, methodName, left, top) {
       var show = false;
-      if(linefakeshow){
+      if(this.linefakeshow){
         if(control === 'ml' || control === 'mr'){
           show = true;
         }else{
