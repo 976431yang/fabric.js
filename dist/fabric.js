@@ -15020,7 +15020,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
      * @chainable
      */
     drawBorders: function(ctx) {
-      if (!this.hasBorders) {
+      if (!this.hasBorders || this.linefakeshow) {
         return this;
       }
 
