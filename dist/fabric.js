@@ -12545,9 +12545,6 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
      */
     dirty:                true,
 
-    //show two point without touch able
-    linefakeshow:         false,
-
     /**
      * List of properties to consider when checking if state
      * of an object is changed (fabric.Object#hasStateChanged)
@@ -15020,7 +15017,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
      * @chainable
      */
     drawBorders: function(ctx) {
-      if (!this.hasBorders || this.linefakeshow) {
+      if (!this.hasBorders || this.type === 'line') {
         return this;
       }
 
@@ -15152,7 +15149,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
           top + height);
 
         // middle-right
-        if(this.linefakeshow){
+        if(this.type === 'line'){
           this._drawControl('mr', ctx, methodName,
           left + width - this.padding,
           top + height / 2);
@@ -15163,7 +15160,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
         }
 
         // middle-left
-        if(this.linefakeshow){
+        if(this.type === 'line'){
           this._drawControl('ml', ctx, methodName,
           left+this.padding,
           top + height / 2);
@@ -15187,16 +15184,12 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       return this;
     },
 
-    setLineSpecialShow: function(){
-      this.linefakeshow = true;
-    },
-
     /**
      * @private
      */
     _drawControl: function(control, ctx, methodName, left, top) {
       var show = false;
-      if(this.linefakeshow){
+      if(this.type === 'line'){
         if(control === 'ml' || control === 'mr'){
           show = true;
         }else{
