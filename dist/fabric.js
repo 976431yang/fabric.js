@@ -9505,8 +9505,13 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
       transform.newScaleX = transform.original.scaleX * dist / lastDist;
       transform.newScaleY = transform.original.scaleY * dist / lastDist;
       scaled = transform.newScaleX !== target.scaleX || transform.newScaleY !== target.scaleY;
-      target.set('scaleX', transform.newScaleX);
-      target.set('scaleY', transform.newScaleY);
+      // if(target.type === 'rect'){
+      //   target.set('width', target.width * transform.newScaleX);
+      //   target.set('height', target.height * transform.newScaleY);
+      // }else{
+        target.set('scaleX', transform.newScaleX);
+        target.set('scaleY', transform.newScaleY);
+      // }
       return scaled;
     },
 
@@ -11045,12 +11050,12 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @private
      */
     _performTransformAction: function(e, transform, pointer) {
+
       var x = pointer.x,
           y = pointer.y,
           target = transform.target,
           action = transform.action,
           actionPerformed = false;
-
       if (action === 'rotate') {
         (actionPerformed = this._rotateObject(x, y)) && this._fire('rotating', target, e);
       }
@@ -15030,20 +15035,29 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       ctx.strokeStyle = this.borderColor;
       this._setLineDash(ctx, this.borderDashArray, null);
 
-      ctx.strokeRect(
-        -width / 2,
-        -height / 2,
-        width,
-        height
-      );
+      if(this.type !== 'rect'){
+        ctx.strokeRect(
+          -width / 2,
+          -height / 2,
+          width,
+          height
+        );
+      }
+      
 
       if (this.hasRotatingPoint && this.isControlVisible('mtr') && !this.get('lockRotation') && this.hasControls) {
 
         var rotateHeight = -height / 2;
 
         ctx.beginPath();
-        ctx.moveTo(0, rotateHeight);
-        ctx.lineTo(0, rotateHeight - this.rotatingPointOffset);
+        
+        if(this.type === 'rect'){
+          ctx.moveTo(0, rotateHeight + this.padding);
+          ctx.lineTo(0, rotateHeight - this.rotatingPointOffset);
+        }else{
+          ctx.moveTo(0, rotateHeight);
+          ctx.lineTo(0, rotateHeight - this.rotatingPointOffset + this.padding);
+        }
         ctx.closePath();
         ctx.stroke();
       }
@@ -15117,24 +15131,50 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       this._setLineDash(ctx, this.cornerDashArray, null);
 
       // top-left
-      this._drawControl('tl', ctx, methodName,
+      if(this.type === 'rect'){
+        this._drawControl('tl', ctx, methodName,
+        left + this.padding,
+        top + this.padding);
+      }else{
+        this._drawControl('tl', ctx, methodName,
         left,
         top);
+      }
 
       // top-right
-      this._drawControl('tr', ctx, methodName,
+      if(this.type === 'rect'){
+        this._drawControl('tr', ctx, methodName,
+        left + width - this.padding,
+        top + this.padding);
+      }else{
+        this._drawControl('tr', ctx, methodName,
         left + width,
         top);
+      }
 
       // bottom-left
-      this._drawControl('bl', ctx, methodName,
+      if(this.type === 'rect'){
+        this._drawControl('bl', ctx, methodName,
+        left + this.padding,
+        top + height - this.padding);
+      }else{
+        this._drawControl('bl', ctx, methodName,
         left,
         top + height);
+      }
+      
 
       // bottom-right
-      this._drawControl('br', ctx, methodName,
+      if(this.type === 'rect'){
+        this._drawControl('br', ctx, methodName,
+        left + width - this.padding,
+        top + height - this.padding);
+      }else{
+        this._drawControl('br', ctx, methodName,
         left + width,
         top + height);
+      }
+      
 
       if (!this.get('lockUniScaling')) {
 
@@ -15191,6 +15231,17 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       var show = false;
       if(this.type === 'line'){
         if(control === 'ml' || control === 'mr'){
+          show = true;
+        }else{
+          show = false;
+        }
+      }else if(this.type === 'rect'){
+        if(control === 'bl' ||
+          control === 'br' ||
+          control === 'tl' ||
+          control === 'tr' ||
+          control === 'mtr')
+        {
           show = true;
         }else{
           show = false;
@@ -16550,7 +16601,6 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
         ctx.fillRect(-0.5, -0.5, 1, 1);
         return;
       }
-
       var rx = this.rx ? Math.min(this.rx, this.width / 2) : 0,
           ry = this.ry ? Math.min(this.ry, this.height / 2) : 0,
           w = this.width,
