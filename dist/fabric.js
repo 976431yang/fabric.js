@@ -15034,8 +15034,14 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       ctx.save();
       ctx.strokeStyle = this.borderColor;
       this._setLineDash(ctx, this.borderDashArray, null);
-
-      if(this.type !== 'rect'){
+      if(this.type == 'rect' || this.type === 'circle'){
+        ctx.strokeRect(
+          -width / 2 + this.padding,
+          -height / 2 + this.padding,
+          width - this.padding*2,
+          height - this.padding*2
+        );
+      }else{
         ctx.strokeRect(
           -width / 2,
           -height / 2,
@@ -15051,7 +15057,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
 
         ctx.beginPath();
         
-        if(this.type === 'rect'){
+        if(this.type === 'rect' || this.type === 'circle'){
           ctx.moveTo(0, rotateHeight + this.padding);
           ctx.lineTo(0, rotateHeight - this.rotatingPointOffset);
         }else{
@@ -15131,7 +15137,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       this._setLineDash(ctx, this.cornerDashArray, null);
 
       // top-left
-      if(this.type === 'rect'){
+      if(this.type === 'rect' || this.type === 'circle'){
         this._drawControl('tl', ctx, methodName,
         left + this.padding,
         top + this.padding);
@@ -15142,7 +15148,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       }
 
       // top-right
-      if(this.type === 'rect'){
+      if(this.type === 'rect' || this.type === 'circle'){
         this._drawControl('tr', ctx, methodName,
         left + width - this.padding,
         top + this.padding);
@@ -15153,7 +15159,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       }
 
       // bottom-left
-      if(this.type === 'rect'){
+      if(this.type === 'rect' || this.type === 'circle'){
         this._drawControl('bl', ctx, methodName,
         left + this.padding,
         top + height - this.padding);
@@ -15165,7 +15171,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       
 
       // bottom-right
-      if(this.type === 'rect'){
+      if(this.type === 'rect' || this.type === 'circle'){
         this._drawControl('br', ctx, methodName,
         left + width - this.padding,
         top + height - this.padding);
@@ -15235,7 +15241,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
         }else{
           show = false;
         }
-      }else if(this.type === 'rect'){
+      }else if(this.type === 'rect' || this.type === 'circle'){
         if(control === 'bl' ||
           control === 'br' ||
           control === 'tl' ||
@@ -16087,11 +16093,22 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
      */
     _render: function(ctx, noTransform) {
       ctx.beginPath();
-      ctx.arc(noTransform ? this.left + this.radius : 0,
-              noTransform ? this.top + this.radius : 0,
-              this.radius,
-              this.startAngle,
-              this.endAngle, false);
+      // ctx.arc(noTransform ? this.left + this.width/2 : 0,
+      //         noTransform ? this.top + this.width/2 : 0,
+      //         this.width/2,
+      //         this.startAngle,
+      //         this.endAngle, false);
+      var x = 0;
+      var y = 0;
+      var a = this.width/2;
+      var b = this.height/2;
+      ctx.moveTo(x+a,y);
+      var step = (a>b)? 1/a : 1/b;
+      for(var i=0; i < 2*Math.PI; i+=step){
+        ctx.lineTo(x+a*Math.cos(i),y+b*Math.sin(i));
+      }
+      ctx.closePath();
+
       this._renderFill(ctx);
       this._renderStroke(ctx);
     },
@@ -16118,7 +16135,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
      */
     setRadius: function(value) {
       this.radius = value;
-      return this.set('width', value * 2).set('height', value * 2);
+      //return this.set('width', value * 2).set('height', value * 2);
     },
   });
 
