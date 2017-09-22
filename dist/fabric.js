@@ -1133,20 +1133,23 @@ fabric.CommonMethods = {
         }
       }
 
-      var _isTransparent = true, i, temp,
-          imageData = ctx.getImageData(x, y, (tolerance * 2) || 1, (tolerance * 2) || 1),
-          l = imageData.data.length;
-
-      // Split image data - for tolerance > 1, pixelDataSize = 4;
-      for (i = 3; i < l; i += 4) {
-        temp = imageData.data[i];
-        _isTransparent = temp <= 0;
-        if (_isTransparent === false) {
-          break; // Stop if colour found
-        }
+      var _isTransparent = true, i, temp;
+          
+      for (var fx=x-6; fx<=x+6 ; fx++){
+        for (var fy=y-6; fy<=y+6 ; fy++){
+          var imageData = ctx.getImageData(fx, fy, (tolerance * 2) || 1, (tolerance * 2) || 1),
+              l = imageData.data.length;
+          // Split image data - for tolerance > 1, pixelDataSize = 4;
+          for (i = 3; i < l; i += 4) {
+            temp = imageData.data[i];
+            _isTransparent = temp <= 0;
+            if (_isTransparent === false) {
+              return false;
+            }
+          }
+          imageData = null;
+        } 
       }
-
-      imageData = null;
 
       return _isTransparent;
     },
@@ -12423,7 +12426,7 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
      * @type Boolean
      * @default
      */
-    perPixelTargetFind:       false,
+    perPixelTargetFind:       true,
 
     /**
      * When `false`, default object's values are not included in its serialization
@@ -15037,7 +15040,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       ctx.save();
       ctx.strokeStyle = this.borderColor;
       this._setLineDash(ctx, this.borderDashArray, null);
-      if(this.type == 'rect' || this.type === 'circle'){
+      if(this.type == 'rect' || this.type === 'circle' || this.type === 'path'){
         ctx.strokeRect(
           -width / 2 + this.padding,
           -height / 2 + this.padding,
@@ -16114,12 +16117,26 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       var y = 0;
       var a = this.width/2;
       var b = this.height/2;
-      ctx.moveTo(x+a,y);
-      var step = (a>b)? 1/a : 1/b;
-      for(var i=0; i < 2*Math.PI; i+=step){
-        ctx.lineTo(x+a*Math.cos(i),y+b*Math.sin(i));
+
+      if(this.width!=0 && this.height!=0){
+          if(this.width<=1){
+          ctx.moveTo(x+a,y);
+          ctx.lineTo(x-a,y);
+        }else if(this.height<=1){
+          ctx.moveTo(x,y-b);
+          ctx.lineTo(x,y+b);
+        }else{
+          ctx.moveTo(x+a,y);
+          var step = (a>b)? 1/a : 1/b;
+          for(var i=0; i < 2*Math.PI; i+=step){
+            ctx.lineTo(x+a*Math.cos(i),y+b*Math.sin(i));
+          }
+          ctx.closePath();
+        }
       }
-      ctx.closePath();
+      
+      
+      
 
       this._renderFill(ctx);
       this._renderStroke(ctx);
