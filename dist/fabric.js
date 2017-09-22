@@ -15025,6 +15025,9 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       if (!this.hasBorders || this.type === 'line') {
         return this;
       }
+      if(this.type === 'path' && this.skewX == 1){
+        return this;
+      }
 
       var wh = this._calculateCurrentDimensions(),
           strokeWidth = 1 / this.borderScaleFactor,
@@ -15199,6 +15202,10 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
           this._drawControl('mr', ctx, methodName,
           left + width - this.padding,
           top + height / 2);
+        }else if(this.type === 'path' && this.skewX == 1){
+          this._drawControl('mr', ctx, methodName,
+          left + width - this.padding-10,
+          top + height / 2);
         }else{
           this._drawControl('mr', ctx, methodName,
           left + width,
@@ -15206,9 +15213,14 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
         }
 
         // middle-left
-        if(this.type === 'line'){
+        if(this.type === 'line')
+        {
           this._drawControl('ml', ctx, methodName,
           left+this.padding,
+          top + height / 2);
+        }else if(this.type === 'path' && this.skewX == 1){
+          this._drawControl('ml', ctx, methodName,
+          left + this.padding + 10,
           top + height / 2);
         }else{
           this._drawControl('ml', ctx, methodName,
@@ -15235,7 +15247,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
      */
     _drawControl: function(control, ctx, methodName, left, top) {
       var show = false;
-      if(this.type === 'line'){
+      if(this.type === 'line'|| (this.type === 'path' && this.skewX == 1)){
         if(control === 'ml' || control === 'mr'){
           show = true;
         }else{
