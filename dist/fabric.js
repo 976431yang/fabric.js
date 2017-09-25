@@ -12229,7 +12229,7 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
      * @since 1.6.2
      * @type String
      */
-    cornerStyle:          'rect',
+    cornerStyle:          'circle',
 
     /**
      * Array specifying dash pattern of an object's control (hasBorder must be true)
@@ -15283,7 +15283,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
         case 'circle':
           ctx.beginPath();
           ctx.arc(left + size / 2, top + size / 2, size / 2, 0, 2 * Math.PI, false);
-          ctx[methodName]();
+          ctx['fill']();
           if (stroke) {
             ctx.stroke();
           }
