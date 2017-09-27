@@ -15205,8 +15205,8 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
         // middle-right
         if(this.type === 'line'){
           this._drawControl('mr', ctx, methodName,
-          left + width - this.padding,
-          top + height / 2);
+          left + width - this.padding-this.strokeWidth/2,
+          top + height / 2+0.25);
         }else if(this.type === 'path' && this.skewX == 1){
           this._drawControl('mr', ctx, methodName,
           left + width - this.padding-10,
@@ -15221,8 +15221,8 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
         if(this.type === 'line')
         {
           this._drawControl('ml', ctx, methodName,
-          left+this.padding,
-          top + height / 2);
+          left+this.padding+this.strokeWidth/2,
+          top + height / 2-0.25);
         }else if(this.type === 'path' && this.skewX == 1){
           this._drawControl('ml', ctx, methodName,
           left + this.padding + 10,
@@ -15284,7 +15284,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       switch (this.cornerStyle) {
         case 'circle':
           ctx.beginPath();
-          ctx.arc(left + size / 2, top + size / 2, size / 2, 0, 2 * Math.PI, false);
+          ctx.arc(left + size/2.0 , top + size/2.0, size / 2, 0, 2 * Math.PI, false);
           ctx['fill']();
           if (stroke) {
             ctx.stroke();
