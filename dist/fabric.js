@@ -1115,7 +1115,6 @@ fabric.CommonMethods = {
      * @param {Number} tolerance Tolerance
      */
     isTransparent: function(ctx, x, y, tolerance) {
-
       // If tolerance is > 0 adjust start coords to take into account.
       // If moves off Canvas fix to 0
       if (tolerance > 0) {
@@ -8929,6 +8928,8 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      */
     fireMiddleClick: false,
 
+    tempEditing:false,
+
     /**
      * @private
      */
@@ -9224,6 +9225,13 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
         default:
           return 'scale';
       }
+    },
+
+    openTempEditingMode: function(){
+      this.tempEditing = true;
+    },
+    closeTempEditingMode: function(){
+      this.tempEditing = false;
     },
 
     /**
@@ -9727,10 +9735,9 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @param {Boolean} skipGroup when true, activeGroup is skipped and only objects are traversed through
      */
     findTarget: function (e, skipGroup) {
-      if (this.skipTargetFind) {
+      if (this.skipTargetFind || this.tempEditing) {
         return;
       }
-
       var ignoreZoom = true,
           pointer = this.getPointer(e, ignoreZoom),
           activeGroup = this.getActiveGroup(),
@@ -9817,7 +9824,6 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @private
      */
     _searchPossibleTargets: function(objects, pointer) {
-
       // Cache all targets where their bounding box contains point.
       var target, i = objects.length, normalizedPointer, subTarget;
       // Do not check for currently grouped objects, since we check the parent group itself.
@@ -10856,7 +10862,15 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @param {Event} e Event object fired on mousedown
      */
     __onMouseDown: function (e) {
+      if (this.isDrawingMode) {
+        this._onMouseDownInDrawingMode(e);
+        return;
+      }
 
+      // ignore if some object is being transformed at this moment
+      if (this._currentTransform) {
+        return;
+      }
       var target = this.findTarget(e);
 
       // if right click just fire events
@@ -10871,16 +10885,6 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
         if (this.fireMiddleClick) {
           this._handleEvent(e, 'down', target ? target : null, MIDDLE_CLICK);
         }
-        return;
-      }
-
-      if (this.isDrawingMode) {
-        this._onMouseDownInDrawingMode(e);
-        return;
-      }
-
-      // ignore if some object is being transformed at this moment
-      if (this._currentTransform) {
         return;
       }
 
@@ -10990,7 +10994,6 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @param {Event} e Event object fired on mousemove
      */
     __onMouseMove: function (e) {
-
       var target, pointer;
 
       if (this.isDrawingMode) {
@@ -11002,7 +11005,6 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
       }
 
       var groupSelector = this._groupSelector;
-
       // We initially clicked in an empty area, so we draw a box for multiple selection
       if (groupSelector) {
         pointer = this.getPointer(e, true);
