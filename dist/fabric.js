@@ -19243,6 +19243,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       this.resizeFilters = [];
       this.callSuper('initialize', options);
       this._initElement(element, options, callback);
+      this.perPixelTargetFind = false;
     },
 
     /**
