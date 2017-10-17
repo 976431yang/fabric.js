@@ -11020,10 +11020,10 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
       }
       else {
         this._transformObject(e);
-        if (!this._lastModifiedTime || Date.now() - this._lastModifiedTime > 100) {
-            this._currentTransform.target.fire('modified', { e: e });
-            this._lastModifiedTime = Date.now();
-        };
+//         if (!this._lastModifiedTime || Date.now() - this._lastModifiedTime > 100) {
+//             this._currentTransform.target.fire('modified', { e: e });
+//             this._lastModifiedTime = Date.now();
+//         };
       }
       this._handleEvent(e, 'move', target ? target : null);
     },
