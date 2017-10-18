@@ -11019,7 +11019,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
         this._setCursorFromEvent(e, target);
       }
       else {
-        if ((this._currentTransform.target.type != 'image' ) && (!this._lastModifiedTime || Date.now() - this._lastModifiedTime > 100)) {
+        if (!this._lastModifiedTime || Date.now() - this._lastModifiedTime > 100) {
             this._finalizeCurrentTransform(e);
             this._lastModifiedTime = Date.now();
         } else {
