@@ -1133,7 +1133,7 @@ fabric.CommonMethods = {
       }
 
       var _isTransparent = true, i, temp;
-          
+
       for (var fx=x-6; fx<=x+6 ; fx++){
         for (var fy=y-6; fy<=y+6 ; fy++){
           var imageData = ctx.getImageData(fx, fy, (tolerance * 2) || 1, (tolerance * 2) || 1),
@@ -1147,7 +1147,7 @@ fabric.CommonMethods = {
             }
           }
           imageData = null;
-        } 
+        }
       }
 
       return _isTransparent;
@@ -11023,14 +11023,18 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
 
             var transform = this._currentTransform,
                 target = transform.target;
-                
+
+            if (target._scaling) {
+              target._scaling = false;
+            }
+
             target.setCoords();
             this._restoreOriginXY(target);
 
             if (transform.actionPerformed || (this.stateful && target.hasStateChanged())) {
                 target.fire('modifieding', { e: e });
             }
-          
+
             this._lastModifiedTime = Date.now();
         } else {
             this._transformObject(e);
@@ -15072,14 +15076,14 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
           height
         );
       }
-      
+
 
       if (this.hasRotatingPoint && this.isControlVisible('mtr') && !this.get('lockRotation') && this.hasControls) {
 
         var rotateHeight = -height / 2;
 
         ctx.beginPath();
-        
+
         if(this.type === 'rect' || this.type === 'circle'){
           ctx.moveTo(0, rotateHeight + this.padding);
           ctx.lineTo(0, rotateHeight - this.rotatingPointOffset);
@@ -15191,7 +15195,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
         left,
         top + height);
       }
-      
+
 
       // bottom-right
       if(this.type === 'rect' || this.type === 'circle'){
@@ -15203,7 +15207,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
         left + width,
         top + height);
       }
-      
+
 
       if (!this.get('lockUniScaling')) {
 
@@ -15247,7 +15251,7 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
           left,
           top + height / 2);
         }
-        
+
       }
 
       // middle-top-rotate
@@ -15289,12 +15293,12 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
           show = false;
         }else{
           show = true;
-        } 
+        }
       }
       if(!show){
         return;
       }
-      
+
       var size = this.cornerSize, stroke = !this.transparentCorners && this.cornerStrokeColor;
       switch (this.cornerStyle) {
         case 'circle':
@@ -16151,9 +16155,9 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
           ctx.closePath();
         }
       }
-      
-      
-      
+
+
+
 
       this._renderFill(ctx);
       this._renderStroke(ctx);
@@ -24968,7 +24972,7 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
      * @chainable
      */
     exitEditing: function() {
-      var isTextChanged = (this._textBeforeEdit !== this.text);
+      var isTextChanged = (typeof this._textBeforeEdit !== 'undefined' && this._textBeforeEdit !== this.text);
       this.selected = false;
       this.isEditing = false;
       this.selectable = true;
@@ -27218,4 +27222,3 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
   }
 
 })();
-
