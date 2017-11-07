@@ -1106,6 +1106,10 @@ fabric.CommonMethods = {
       return (String(fn).match(/function[^{]*\{([\s\S]*)\}/) || {})[1];
     },
 
+    changeEditingObjectState : function (bool) {
+      this.isEditingObject = bool;
+    },
+    
     /**
      * Returns true if context has transparent pixel
      * at specified location (taking tolerance into account)
@@ -1134,6 +1138,10 @@ fabric.CommonMethods = {
 
       var _isTransparent = true, i, temp;
 
+      if(this.isEditingObject === true) {
+        return _isTransparent;
+      };
+      
       for (var fx=x-6; fx<=x+6 ; fx++){
         for (var fy=y-6; fy<=y+6 ; fy++){
           var imageData = ctx.getImageData(fx, fy, (tolerance * 2) || 1, (tolerance * 2) || 1),
