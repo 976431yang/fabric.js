@@ -16156,16 +16156,14 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
           ctx.lineTo(x,y+b);
         }else{
           ctx.moveTo(x+a,y);
-          var step = (a>b)? 1/a : 1/b;
+          var step = (a>b)? (2*Math.PI)/a : (2*Math.PI)/b;
+          step = Math.max(0.013, step);
           for(var i=0; i < 2*Math.PI; i+=step){
             ctx.lineTo(x+a*Math.cos(i),y+b*Math.sin(i));
           }
           ctx.closePath();
         }
       }
-
-
-
 
       this._renderFill(ctx);
       this._renderStroke(ctx);
